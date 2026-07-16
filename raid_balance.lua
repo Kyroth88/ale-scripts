@@ -6,7 +6,7 @@ local AURA_ID = 90001 -- Custom aura created via SQL
 
 -- Stacks = how many *10%* reductions to apply
 local RAID_AURA_STACKS = {
-    [409] = 5,  -- Molten Core (default:5)
+    [409] = 7,  -- Molten Core (default:7)
     [249] = 5,  -- Onyxia's Lair (default:5)
     [469] = 4,  -- BWL (default:4)
     [509] = 4,  -- AQ20 (default:4)
