@@ -124,7 +124,7 @@ local function OnPlayerCommand(event, player, command)
     end
 
     -- Match "#boost" (or "boost" if the core automatically strips the '#' prefix)
-    if trigger:lower() == "#boost" or trigger:lower() == "boost" then
+    if trigger:lower() == "#boost" then -- or trigger:lower() == "boost" then
         local levelArg = tonumber(args[2])
 
         -- Validate the level argument (60, 70, or 80)
