@@ -1,5 +1,5 @@
 -- boost.lua (ALE for AzerothCore)
--- Command: .boost 60 | 70 | 80
+-- Command: #boost 60 | 70 | 80
 
 local PLAYER_EVENT_ON_COMMAND = 42
 
