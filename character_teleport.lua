@@ -1,9 +1,6 @@
---[[ 
+--[[
     Universal ALE Teleport Command
-    Works on all ALE builds without knowing the command event ID.
-    Features:
-      - .tp <location>
-      - .tp player <name>
+    Optimized & Verified for AzerothCore Lua Engine
 --]]
 
 local TeleportLocations = {}
@@ -13,16 +10,14 @@ local TeleportLocations = {}
 ---------------------------------------------------------------------
 local function LoadTeleports()
     print("[ALE] Loading teleport locations from game_tele...")
-
     local query = WorldDBQuery("SELECT name, map, position_x, position_y, position_z, orientation FROM game_tele")
-
+    
     if not query then
         print("[ALE] ERROR: No entries found in game_tele!")
         return
     end
 
     local count = 0
-
     repeat
         local name = query:GetString(0):lower()
         TeleportLocations[name] = {
@@ -34,82 +29,71 @@ local function LoadTeleports()
         }
         count = count + 1
     until not query:NextRow()
-
+    
     print("[ALE] Loaded " .. count .. " teleport locations.")
 end
-
 LoadTeleports()
 
 ---------------------------------------------------------------------
 -- MAIN TELEPORT HANDLER
 ---------------------------------------------------------------------
-local function HandleTP(player, msg)
-    if not msg then return end
-
-    local args = msg:lower()
-
-    -- Only handle .tp commands
-    if args:sub(1, 3) ~= "tp " then
-        return
+local function OnPlayerCommand(event, player, command)
+    -- Split the command string into whitespace-separated arguments
+    local args = {}
+    for word in string.gmatch(command, "%S+") do
+        table.insert(args, word)
     end
 
-    local param = args:sub(4)
+    local trigger = args[1]
+    if not trigger then return end
 
-    ----------------------------------------------------------------
-    -- .tp player <name>
-    ----------------------------------------------------------------
-    if param:sub(1, 7) == "player " then
-        local targetName = param:sub(8)
+    -- Match "#tele" or "tele" (in case the core configuration strips the prefix)
+    if trigger:lower() == "#tele" or trigger:lower() == "tele" then
+        local subCommand = args[2]
 
-        if targetName == "" then
-            player:SendBroadcastMessage("Usage: .tp player <name>")
-            return
+        if not subCommand then
+            player:SendBroadcastMessage("Usage: #tele <location> OR #tele player <name>")
+            return false
         end
 
-        local target = GetPlayerByName(targetName)
+        ----------------------------------------------------------------
+        -- #tele player <name>
+        ----------------------------------------------------------------
+        if subCommand:lower() == "player" then
+            local targetName = args[3]
+            if not targetName or targetName == "" then
+                player:SendBroadcastMessage("Usage: #tele player <name>")
+                return false
+            end
 
-        if target then
-            player:Teleport(
-                target:GetMapId(),
-                target:GetX(),
-                target:GetY(),
-                target:GetZ(),
-                target:GetO()
-            )
-            player:SendBroadcastMessage("Teleported to player: " .. targetName)
+            local target = GetPlayerByName(targetName)
+            if target then
+                player:Teleport(target:GetMapId(), target:GetX(), target:GetY(), target:GetZ(), target:GetO())
+                player:SendBroadcastMessage("Teleported to player: " .. targetName)
+            else
+                player:SendBroadcastMessage("Player not found or not online.")
+            end
+            return false
+        end
+
+        ----------------------------------------------------------------
+        -- #tele <location>
+        ----------------------------------------------------------------
+        -- Safely pieces the string back together if a location has spaces (e.g., #tele iron forge)
+        local locName = table.concat(args, " ", 2):lower()
+        local loc = TeleportLocations[locName]
+
+        if loc then
+            player:Teleport(loc.map, loc.x, loc.y, loc.z, loc.o)
+            player:SendBroadcastMessage("Teleported to: " .. locName)
         else
-            player:SendBroadcastMessage("Player not found or not online.")
+            player:SendBroadcastMessage("Unknown location: " .. locName)
         end
 
-        return
-    end
-
-    ----------------------------------------------------------------
-    -- .tp <location>
-    ----------------------------------------------------------------
-    local loc = TeleportLocations[param]
-
-    if loc then
-        player:Teleport(loc.map, loc.x, loc.y, loc.z, loc.o)
-        player:SendBroadcastMessage("Teleported to: " .. param)
-    else
-        player:SendBroadcastMessage("Unknown location.")
-        player:SendBroadcastMessage("Use .tele list (GM command) to see all available locations.")
+        return false -- Returning false safely stops AzerothCore command processing
     end
 end
 
----------------------------------------------------------------------
--- UNIVERSAL EVENT REGISTRATION
--- We hook ALL player events safely.
--- Only the correct one will fire for commands.
----------------------------------------------------------------------
-for id = 1, 73 do
-    RegisterPlayerEvent(id, function(event, player, msg)
-        -- Only process if msg is a string (command/chat)
-        if type(msg) == "string" then
-            HandleTP(player, msg)
-        end
-    end)
-end
-
-print("[ALE] Universal Teleport Command Loaded.")
+-- Hook directly into PLAYER_EVENT_ON_COMMAND (Event 42)
+RegisterPlayerEvent(42, OnPlayerCommand)
+print("[ALE] #tele Command Engine Hooked via Event 42.")
