@@ -111,21 +111,61 @@ local function ApplyBoost(player, targetLevel)
     )
 end
 
-local function OnCommand(event, player, command)
-    local cmd, arg = command:match("^(%S+)%s*(%S*)")
-    if not cmd or cmd:lower() ~= "boost" then
-        return
+local function OnPlayerCommand(event, player, command)
+    -- Split the command string into arguments
+    local args = {}
+    for word in string.gmatch(command, "%S+") do
+        table.insert(args, word)
     end
 
-    local level = tonumber(arg)
-    if not level or not BOOST_CONFIG[level] then
-        player:SendBroadcastMessage("Usage: .boost 60 | 70 | 80")
-        return false
+    local trigger = args[1]
+    if not trigger then 
+        return 
     end
 
-    ApplyBoost(player, level)
-    return false
+    -- Match "#boost" (or "boost" if the core automatically strips the '#' prefix)
+    if trigger:lower() == "#boost" or trigger:lower() == "boost" then
+        local levelArg = tonumber(args[2])
+
+        -- Validate the level argument (60, 70, or 80)
+        if not levelArg or not BOOST_CONFIG[levelArg] then
+            player:SendAreaTriggerMessage("Syntax: #boost <60 | 70 | 80>")
+            return false -- Handled, prevent "command not found" system errors
+        end
+
+        local config = BOOST_CONFIG[levelArg]
+
+        -- 1. Set Level
+        player:SetLevel(config.level)
+
+        -- 2. Set Riding Skill & Teach Riding Spells
+        SetSkillProper(player, SKILL_RIDING, config.ridingStep, config.ridingMax)
+        for _, spellId in ipairs(config.ridingSpells) do
+            player:LearnSpell(spellId)
+        end
+
+        -- 3. Set Profession Skills (Cooking, First Aid, Fishing)
+        -- (Assuming you want these maxed out per the config)
+        player:LearnSpell(SPELL_COOKING)
+        SetSkillProper(player, SKILL_COOKING, config.profStep, config.profMax)
+
+        player:LearnSpell(SPELL_FISHING)
+        SetSkillProper(player, SKILL_FISHING, config.profStep, config.profMax)
+
+        player:LearnSpell(SPELL_FIRSTAID)
+        SetSkillProper(player, SKILL_FIRSTAID, config.profStep, config.profMax)
+
+        -- 4. Teach Bandage Recipes
+        for _, spellId in ipairs(config.bandages) do
+            player:LearnSpell(spellId)
+        end
+
+        player:SendAreaTriggerMessage("Character successfully boosted to level " .. levelArg .. "!")
+        return false -- Returning false stops further core command processing
+    end
 end
 
-RegisterPlayerEvent(PLAYER_EVENT_ON_COMMAND, OnCommand)
+-- Register the command event
+RegisterPlayerEvent(PLAYER_EVENT_ON_COMMAND, OnPlayerCommand)
+
 print("[ALE] Character Boost Enabled (60|70|80)")
