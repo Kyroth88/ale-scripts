@@ -38,23 +38,23 @@ LoadTeleports()
 -- MAIN TELEPORT HANDLER
 ---------------------------------------------------------------------
 local function OnPlayerCommand(event, player, command)
-    -- Split the command string into whitespace-separated arguments
-    local args = {}
-    for word in string.gmatch(command, "%S+") do
-        table.insert(args, word)
-    end
+    -- Normalize command
+    command = command:lower()
 
-    local trigger = args[1]
-    if not trigger then return end
+    -- Check for .tp command
+    if command:sub(1, 3) == "tp " then
+        local args = command:sub(4) -- everything after "tp "
+        local dest = Teleports[args]
 
-    -- Match "#tele" or "tele" (in case the core configuration strips the prefix)
-    if trigger:lower() == "#tele" or trigger:lower() == "tele" then
-        local subCommand = args[2]
-
-        if not subCommand then
-            player:SendBroadcastMessage("Usage: #tele <location> OR #tele player <name>")
-            return false
+        if dest then
+            player:Teleport(dest.map, dest.x, dest.y, dest.z, dest.o)
+        else
+            player:SendBroadcastMessage("Unknown teleport: " .. args)
         end
+
+        return false -- block default handling
+    end
+end
 
         ----------------------------------------------------------------
         -- #tele player <name>
