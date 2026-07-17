@@ -1,5 +1,5 @@
 -- boost.lua (ALE for AzerothCore)
--- Command: #boost 60 | 70 | 80
+-- Command: .boost 60 | 70 | 80
 
 local PLAYER_EVENT_ON_COMMAND = 42
 
@@ -77,40 +77,6 @@ local BOOST_CONFIG = {
     },
 }
 
-local function ApplyBoost(player, targetLevel)
-    local cfg = BOOST_CONFIG[targetLevel]
-    if not cfg then
-        player:SendBroadcastMessage("Usage: .boost 60 | 70 | 80")
-        return
-    end
-
-    player:SetLevel(cfg.level)
-
-    -- Riding
-    SetSkillProper(player, SKILL_RIDING, cfg.ridingStep, cfg.ridingMax)
-    for _, spellId in ipairs(cfg.ridingSpells) do
-        player:LearnSpell(spellId)
-    end
-
-    -- Professions
-    SetSkillProper(player, SKILL_COOKING,  cfg.profStep, cfg.profMax)
-    SetSkillProper(player, SKILL_FIRSTAID, cfg.profStep, cfg.profMax)
-    SetSkillProper(player, SKILL_FISHING,  cfg.profStep, cfg.profMax)
-
-    player:LearnSpell(SPELL_COOKING)
-    player:LearnSpell(SPELL_FIRSTAID)
-    player:LearnSpell(SPELL_FISHING)
-
-    -- Bandage recipes
-    for _, spellId in ipairs(cfg.bandages) do
-        player:LearnSpell(spellId)
-    end
-
-    player:SendBroadcastMessage(
-        string.format("Boosted to %d with riding, professions, and all appropriate bandages learned.", cfg.level)
-    )
-end
-
 local function OnPlayerCommand(event, player, command)
     -- Split the command string into arguments
     local args = {}
@@ -123,13 +89,15 @@ local function OnPlayerCommand(event, player, command)
         return 
     end
 
-    -- Match "#boost" (or "boost" if the core automatically strips the '#' prefix)
-    if trigger:lower() == "#boost" then -- or trigger:lower() == "boost" then
+    trigger = trigger:lower()
+
+    -- Correctly match ".boost" or "boost" (in case the core automatically strips the prefix)
+    if trigger == ".boost" or trigger == "boost" then
         local levelArg = tonumber(args[2])
 
         -- Validate the level argument (60, 70, or 80)
         if not levelArg or not BOOST_CONFIG[levelArg] then
-            player:SendAreaTriggerMessage("Syntax: #boost <60 | 70 | 80>")
+            player:SendAreaTriggerMessage("Syntax: .boost <60 | 70 | 80>")
             return false -- Handled, prevent "command not found" system errors
         end
 
@@ -145,7 +113,6 @@ local function OnPlayerCommand(event, player, command)
         end
 
         -- 3. Set Profession Skills (Cooking, First Aid, Fishing)
-        -- (Assuming you want these maxed out per the config)
         player:LearnSpell(SPELL_COOKING)
         SetSkillProper(player, SKILL_COOKING, config.profStep, config.profMax)
 
@@ -168,4 +135,4 @@ end
 -- Register the command event
 RegisterPlayerEvent(PLAYER_EVENT_ON_COMMAND, OnPlayerCommand)
 
-print("[ALE] Character Boost Enabled (60|70|80)")
+print("[ALE] Character Boost Enabled (60|70|80) via .boost")
