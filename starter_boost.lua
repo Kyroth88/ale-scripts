@@ -81,8 +81,33 @@ local function CanClaimBoost(player)
         return false
     end
 
-    -- 3. Inventory Space Check (Fixed for ALE using GetFreeSlots)
-    local freeSlots = player:GetFreeSlots()
+    -- 3. Inventory Space Check (ALE-Native Implementation)
+    local freeSlots = 0
+
+    -- Check Backpack slots (Backpack is container slot 23, with slots 0 to 15)
+    for slot = 0, 15 do
+        if not player:GetItemByPos(23, slot) then
+            freeSlots = freeSlots + 1
+        end
+    end
+
+    -- Check Equipped Bag Bags (Bags 1 through 4 are stored in inventory container 23, slots 19 to 22)
+    for bagSlot = 19, 22 do
+        local bag = player:GetItemByPos(23, bagSlot)
+        if bag and bag:IsContainer() then
+            -- Get the number of total slots this specific bag offers
+            local totalBagSlots = bag:GetBagSlots()
+            if totalBagSlots and totalBagSlots > 0 then
+                -- Check empty spaces inside this specific sub-container (using its item entry identifier)
+                local bagEntryId = bag:GetEntry()
+                for slot = 0, totalBagSlots - 1 do
+                    if not player:GetItemByPos(bagEntryId, slot) then
+                        freeSlots = freeSlots + 1
+                    end
+                end
+            end
+        end
+    end
 
     if freeSlots < 10 then
         player:SendBroadcastMessage("|cffff0000Error: You need at least 10 free inventory slots to claim this boost (You have " .. freeSlots .. ").|r")
