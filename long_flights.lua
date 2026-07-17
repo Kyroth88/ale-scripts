@@ -1,4 +1,4 @@
-# This script keeps instant flights defaulted to OFF when server config allows the gossip menu to select instant flights.
+-- This script keeps instant flights defaulted to OFF when server config allows the gossip menu to select instant flights.
 local InstantFlightReset = {}
 
 function InstantFlightReset.OnLogin(event, player)
