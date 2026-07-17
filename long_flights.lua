@@ -6,9 +6,13 @@ function InstantFlightReset.OnLogin(event, player)
     player:SetData("instant_flight", false)
 
     -- Reset PlayerTaxi instant flight if your gossip uses this
-    if player:GetTaxi() then
-        player:GetTaxi():SetInstantTaxi(false)
+    local taxi = player:GetTaxi()
+    if taxi then
+        taxi:SetInstantTaxi(false)
     end
 end
 
+-- Register player login event (PLAYER_EVENT_ON_LOGIN = 3)
 RegisterPlayerEvent(3, InstantFlightReset.OnLogin)
+
+print("[ALE] InstantFlightReset module loaded.")
