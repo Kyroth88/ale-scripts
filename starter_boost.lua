@@ -81,17 +81,11 @@ local function CanClaimBoost(player)
         return false
     end
 
-    -- 3. Inventory Space Check
-    local freeSlots = 0
-    for i = 0, 4 do 
-        local slots = player:GetEmptySlotsCount(i)
-        if slots then
-            freeSlots = freeSlots + slots
-        end
-    end
+    -- 3. Inventory Space Check (Fixed for ALE using GetFreeSlots)
+    local freeSlots = player:GetFreeSlots()
 
     if freeSlots < 10 then
-        player:SendBroadcastMessage("|cffff0000Error: You need at least 10 free inventory slots to claim this boost.|r")
+        player:SendBroadcastMessage("|cffff0000Error: You need at least 10 free inventory slots to claim this boost (You have " .. freeSlots .. ").|r")
         return false
     end
 
