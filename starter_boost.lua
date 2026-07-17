@@ -1,5 +1,5 @@
 -- Configuration
-local TRIGGER_COMMAND = "#starterboost" -- Command players type in chat
+local TRIGGER_COMMAND = ".starterboost" -- Changed to dot prefix
 local MAX_LEVEL = 10                  -- Maximum level allowed to use the boost
 local GOLD_AMOUNT = 250 * 10000       -- 250 gold (in copper: 1g = 10000 copper)
 local BAG_ITEM_ID = 41599             -- Frostweave Bag (20 Slot)
@@ -9,60 +9,60 @@ local BAG_COUNT = 4
 local ALLIANCE_INSIGNIA = 44098
 local HORDE_INSIGNIA = 44097
 
--- Memory storage to track claims for the session (100% ALE-safe alternative to SetVar/GetVar)
+-- Memory storage to track claims for the session
 local ClaimedSessionTracker = {}
 
--- Heirlooms configured precisely by Class (using your provided list)
+-- Heirlooms configured precisely by Class
 local CLASS_BOOSTS = {
     [1] = { -- WARRIOR (Plate Melee)
-        weapons = {42943},                 -- Bloodied Arcanite Reaper (2H Axe)
-        armor = {48685, 42949},            -- Polished Breastplate of Valor, Polished Spaulders of Valor
-        trinket = 42991                    -- Swift Hand of Justice (Melee)
+        weapons = {42943},                  -- Bloodied Arcanite Reaper (2H Axe)
+        armor = {48685, 42949},             -- Polished Breastplate of Valor, Polished Spaulders of Valor
+        trinket = 42991                     -- Swift Hand of Justice (Melee)
     },
     [2] = { -- PALADIN (Plate Melee/Hybrid)
-        weapons = {42943},                 -- Bloodied Arcanite Reaper (2H Axe)
-        armor = {48685, 42949},            -- Polished Breastplate of Valor, Polished Spaulders of Valor
-        trinket = 42991                    -- Swift Hand of Justice (Melee)
+        weapons = {42943},                  -- Bloodied Arcanite Reaper (2H Axe)
+        armor = {48685, 42949},             -- Polished Breastplate of Valor, Polished Spaulders of Valor
+        trinket = 42991                     -- Swift Hand of Justice (Melee)
     },
     [3] = { -- HUNTER (Mail Physical Ranged)
-        weapons = {48714, 42944},          -- Charmed Ancient Bone Bow (Bow), Balanced Heartseeker (Dagger)
-        armor = {48677, 42952},            -- Champion's Deathdealer Breastplate, Champion Herod's Shoulder
-        trinket = 42991                    -- Swift Hand of Justice (Melee/Ranged Haste)
+        weapons = {48714, 42944},           -- Charmed Ancient Bone Bow (Bow), Balanced Heartseeker (Dagger)
+        armor = {48677, 42952},             -- Champion's Deathdealer Breastplate, Champion Herod's Shoulder
+        trinket = 42991                     -- Swift Hand of Justice (Melee/Ranged Haste)
     },
     [4] = { -- ROGUE (Leather Physical)
-        weapons = {42944, 42944},          -- Balanced Heartseeker x2 (Dual Wield Daggers)
-        armor = {48689, 42984},            -- Stained Shadowcraft Tunic, Stained Shadowcraft Spaulders
-        trinket = 42991                    -- Swift Hand of Justice (Melee)
+        weapons = {42944, 42944},           -- Balanced Heartseeker x2 (Dual Wield Daggers)
+        armor = {48689, 42984},             -- Stained Shadowcraft Tunic, Stained Shadowcraft Spaulders
+        trinket = 42991                     -- Swift Hand of Justice (Melee)
     },
     [5] = { -- PRIEST (Cloth Spellcaster)
-        weapons = {42947},                 -- Dignified Headmaster's Charge (Staff)
-        armor = {48691, 42985},            -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
-        trinket = 42992                    -- Discerning Eye of the Beast (Spell)
+        weapons = {42947},                  -- Dignified Headmaster's Charge (Staff)
+        armor = {48691, 42985},             -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
+        trinket = 42992                     -- Discerning Eye of the Beast (Spell)
     },
     [6] = { -- DEATH KNIGHT (Plate Melee)
-        weapons = {42943},                 -- Bloodied Arcanite Reaper (2H Axe)
-        armor = {48685, 42949},            -- Polished Breastplate of Valor, Polished Spaulders of Valor
-        trinket = 42991                    -- Swift Hand of Justice (Melee)
+        weapons = {42943},                  -- Bloodied Arcanite Reaper (2H Axe)
+        armor = {48685, 42949},             -- Polished Breastplate of Valor, Polished Spaulders of Valor
+        trinket = 42991                     -- Swift Hand of Justice (Melee)
     },
     [7] = { -- SHAMAN (Mail Spell/Hybrid)
-        weapons = {48718, 48718},          -- Devout Aurastone Hammer x2 (Main Hand Spell Mace)
-        armor = {48683, 42947},            -- Mystical Vest of Elements, Mystical Pauldrons of Elements
-        trinket = 42992                    -- Discerning Eye of the Beast (Spell)
+        weapons = {48718, 48718},           -- Devout Aurastone Hammer x2 (Main Hand Spell Mace)
+        armor = {48683, 42947},             -- Mystical Vest of Elements, Mystical Pauldrons of Elements
+        trinket = 42992                     -- Discerning Eye of the Beast (Spell)
     },
     [8] = { -- MAGE (Cloth Spellcaster)
-        weapons = {42947},                 -- Dignified Headmaster's Charge (Staff)
-        armor = {48691, 42985},            -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
-        trinket = 42992                    -- Discerning Eye of the Beast (Spell)
+        weapons = {42947},                  -- Dignified Headmaster's Charge (Staff)
+        armor = {48691, 42985},             -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
+        trinket = 42992                     -- Discerning Eye of the Beast (Spell)
     },
     [9] = { -- WARLOCK (Cloth Spellcaster)
-        weapons = {42947},                 -- Dignified Headmaster's Charge (Staff)
-        armor = {48691, 42985},            -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
-        trinket = 42992                    -- Discerning Eye of the Beast (Spell)
+        weapons = {42947},                  -- Dignified Headmaster's Charge (Staff)
+        armor = {48691, 42985},             -- Tattered Dreadmist Robe, Tattered Dreadmist Mantle
+        trinket = 42992                     -- Discerning Eye of the Beast (Spell)
     },
     [11] = { -- DRUID (Leather Spell/Hybrid)
-        weapons = {42947},                 -- Dignified Headmaster's Charge (Staff)
-        armor = {48687, 42986},            -- Preened Ironfeather Breastplate, Preened Ironfeather Shoulders
-        trinket = 42992                    -- Discerning Eye of the Beast (Spell)
+        weapons = {42947},                  -- Dignified Headmaster's Charge (Staff)
+        armor = {48687, 42986},             -- Preened Ironfeather Breastplate, Preened Ironfeather Shoulders
+        trinket = 42992                     -- Discerning Eye of the Beast (Spell)
     }
 }
 
@@ -75,15 +75,15 @@ local function CanClaimBoost(player)
         return false
     end
 
-    -- 2. Session Memory Check (Prevents multiple claims during active session)
+    -- 2. Session Memory Check
     if ClaimedSessionTracker[guid] then
         player:SendBroadcastMessage("|cffff0000Error: You have already claimed your starter boost!|r")
         return false
     end
 
-    -- 3. Inventory Space Check (Uses dynamic container checks; strictly 10 free slots required)
+    -- 3. Inventory Space Check
     local freeSlots = 0
-    for i = 0, 4 do -- Check backpack (0) and equipped bag containers (1-4)
+    for i = 0, 4 do 
         local slots = player:GetEmptySlotsCount(i)
         if slots then
             freeSlots = freeSlots + slots
@@ -114,20 +114,16 @@ local function GiveStarterBoost(player)
     -- 3. Grant Class Heirlooms
     local boostData = CLASS_BOOSTS[class]
     if boostData then
-        -- Add Weapons
         for _, itemId in ipairs(boostData.weapons) do
             player:AddItem(itemId, 1)
         end
 
-        -- Add Chest & Shoulders
         for _, itemId in ipairs(boostData.armor) do
             player:AddItem(itemId, 1)
         end
 
-        -- Add Unique Trinket 1 (PvE Trinket from Class Config)
         player:AddItem(boostData.trinket, 1)
 
-        -- Add Unique Trinket 2 (Faction PvP Insignia to bypass Unique-Equip restriction on PvE ones)
         if faction == 0 then
             player:AddItem(ALLIANCE_INSIGNIA, 1)
         else
@@ -137,24 +133,31 @@ local function GiveStarterBoost(player)
         player:SendBroadcastMessage("|cff00ff00Your gold and bags were delivered, but no heirloom profile was found for your class.|r")
     end
 
-    -- 4. Mark as claimed in memory table
+    -- 4. Mark as claimed
     ClaimedSessionTracker[guid] = true
     
-    -- Visual Spell Flare (Cast visual effect 63660 - "Power Torrent" style shine)
     player:CastSpell(player, 63660, true) 
     player:SendBroadcastMessage("|cff00ff00Starter Boost Applied! Check your bags. Good luck out there!|r")
 end
 
-local function OnChat(event, player, msg, Type, lang)
-    if string.lower(msg) == string.lower(TRIGGER_COMMAND) then
+-- Main command handler hook
+local function OnPlayerCommand(event, player, command)
+    -- Grab the first element to process the trigger
+    local trigger = command:match("%S+")
+    if not trigger then return end
+
+    trigger = trigger:lower()
+
+    -- Check for ".starterboost" or "starterboost" (if core strips the prefix)
+    if trigger == ".starterboost" or trigger == "starterboost" then
         if CanClaimBoost(player) then
             GiveStarterBoost(player)
         end
-        return false -- Blocks command from broadcasting in public chat channels
+        return false -- Interrupts core processing, suppressing "Command not found" box errors
     end
 end
 
--- Cleanup memory when a player logs out to keep the memory footprint clean
+-- Cleanup session tracker maps safely on character logout
 local function OnLogout(event, player)
     local guid = player:GetGUIDLow()
     if ClaimedSessionTracker[guid] then
@@ -162,8 +165,10 @@ local function OnLogout(event, player)
     end
 end
 
--- Register player chat event (PLAYER_EVENT_ON_CHAT = 18)
-RegisterPlayerEvent(18, OnChat)
+-- Hook into command processing (PLAYER_EVENT_ON_COMMAND = 42)
+RegisterPlayerEvent(42, OnPlayerCommand)
 
 -- Register player logout event (PLAYER_EVENT_ON_LOGOUT = 4)
 RegisterPlayerEvent(4, OnLogout)
+
+print("[ALE] Starter Boost Enabled via .starterboost (Max level " .. MAX_LEVEL .. ")")
