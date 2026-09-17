@@ -17,9 +17,10 @@
             --text: #e2e8f0;
             --text-muted: #94a3b8;
             --gold: #f59e0b;
+            --event-color: #a855f7;
+            --event-glow: rgba(168, 85, 247, 0.35);
         }
 
-        /* Dynamic Theme Overrides by Season */
         [data-season="classic"] { --primary: #eab308; --primary-glow: rgba(234, 179, 8, 0.35); }
         [data-season="tbc"] { --primary: #22c55e; --primary-glow: rgba(34, 197, 94, 0.35); }
         [data-season="wotlk"] { --primary: #38bdf8; --primary-glow: rgba(56, 189, 248, 0.35); }
@@ -34,7 +35,6 @@
             padding-bottom: 4rem;
             background-image: radial-gradient(circle at 50% 0%, var(--primary-glow) 0%, transparent 60%);
             background-attachment: fixed;
-            transition: all 0.5s ease;
         }
 
         h1, h2, h3, .brand { font-family: 'Cinzel', serif; letter-spacing: 1px; text-transform: uppercase; }
@@ -57,7 +57,7 @@
             box-shadow: 0 0 25px var(--primary-glow);
             border-radius: 12px;
             padding: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -78,6 +78,87 @@
 
         .timer-badge span { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
         .timer-badge strong { font-size: 1.2rem; color: var(--gold); font-family: monospace; }
+
+        .events-section { margin-bottom: 2rem; }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .event-card {
+            background: rgba(26, 16, 37, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .event-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .event-card.upcoming {
+            border-color: var(--event-color);
+            box-shadow: 0 0 15px var(--event-glow);
+        }
+
+        .event-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .event-card-header i { font-size: 1.5rem; color: var(--event-color); }
+        .event-card.active .event-card-header i { color: var(--primary); }
+
+        .event-card-title { font-size: 1.1rem; color: #fff; margin-bottom: 0.2rem; }
+        .event-card-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex-grow: 1; }
+
+        .event-meta {
+            border-top: 1px solid var(--border);
+            padding-top: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+        }
+
+        .event-date { color: var(--text); font-weight: 600; display: flex; align-items: center; }
+
+        .event-badges {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .badge-active { background: var(--primary); color: #000; }
+        .badge-upcoming { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid var(--event-color); }
+        .badge-time { background: rgba(0, 0, 0, 0.5); color: var(--gold); border: 1px solid var(--border); }
 
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
 
@@ -110,12 +191,6 @@
             background: rgba(255, 255, 255, 0.02);
             transition: all 0.3s ease;
             cursor: pointer;
-            user-select: none;
-        }
-
-        .rotation-item:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.04);
         }
 
         .rotation-item.selected {
@@ -124,40 +199,11 @@
             box-shadow: 0 0 15px var(--primary-glow);
         }
 
-        .rotation-item.ended {
-            opacity: 0.65;
-        }
-
+        .rotation-item.ended { opacity: 0.65; }
         .rotation-title { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.3rem; }
-        
-        .badge {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .badge-active { background: var(--primary); color: #000; }
-        .badge-upcoming { background: rgba(245, 158, 11, 0.2); color: var(--gold); border: 1px solid var(--gold); }
-        .badge-ended { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); border: 1px solid var(--border); }
-
         .rotation-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.4rem; }
-        
-        .rotation-bonus-list {
-            list-style: none;
-            margin-top: 0.4rem;
-        }
-
-        .rotation-bonus-item {
-            font-size: 0.85rem;
-            color: var(--gold);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            line-height: 1.4;
-        }
+        .rotation-bonus-list { list-style: none; margin-top: 0.4rem; }
+        .rotation-bonus-item { font-size: 0.85rem; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
         .checklist { list-style: none; }
         .checklist-item {
@@ -192,7 +238,6 @@
     </header>
 
     <div class="container">
-        <!-- Active Season Banner -->
         <div class="season-banner">
             <div class="season-info">
                 <h1 id="season-title">Season of Discovery: Classic Azeroth</h1>
@@ -204,8 +249,13 @@
             </div>
         </div>
 
+        <!-- UPCOMING WORLD EVENTS -->
+        <div class="events-section">
+            <h2 class="section-title"><i class="fa-solid fa-calendar-days" style="color: var(--event-color);"></i> UPCOMING WORLD EVENTS</h2>
+            <div class="events-grid" id="events-container"></div>
+        </div>
+
         <div class="grid-2">
-            <!-- Left Column: Season Bonuses -->
             <div class="card">
                 <div class="card-header">
                     <i class="fa-solid fa-arrows-rotate"></i>
@@ -214,11 +264,10 @@
                 <ul class="rotation-list" id="rotation-container"></ul>
             </div>
 
-            <!-- Right Column: Interactive Dynamic Checklist & Tools -->
             <div>
                 <div class="card" style="margin-bottom: 1.5rem;">
                     <div class="card-header">
-                        <i class="fa-solid fa-list-check"></i>
+                        <i class="fa-solid fa-list-check" id="checklist-icon"></i>
                         <h2 id="checklist-title">Session Goal Checklist</h2>
                     </div>
                     <ul class="checklist" id="checklist-container"></ul>
@@ -232,6 +281,7 @@
                     <div class="cmd-box">.xp set 1 (Toggle Normal Rate)</div>
                     <div class="cmd-box">.tele shattrath / .tele dalaran</div>
                     <div class="cmd-box">.account set gmlevel 3</div>
+                    <div class="cmd-box">.event start [event_id] (Force World Event)</div>
                 </div>
             </div>
         </div>
@@ -239,24 +289,25 @@
 
     <script>
         const SEASONS = [
-            { 
-                id: "classic", 
-                title: "Season of Discovery: Classic Azeroth", 
-                goal: "Return to original Azeroth, unearthing forgotten lore and re-exploring her timeless lands.", 
-                start: 1790812800 * 1000 
-            },
-            { 
-                id: "tbc", 
-                title: "Season of Discovery: Outland", 
-                goal: "Step through the Dark Portal to rediscover a shattered world and brave the lands Beyond.", 
-                start: 1796860800 * 1000 
-            },
-            { 
-                id: "wotlk", 
-                title: "Season of Discovery: Northrend", 
-                goal: "Venture north into the frozen wilderness to experience the ancient mysteries of the roof of the world.", 
-                start: 1802908800 * 1000 
-            }
+            { id: "classic", title: "Season of Discovery: Classic Azeroth", goal: "Return to original Azeroth, unearthing forgotten lore.", start: 1790812800 * 1000 },
+            { id: "tbc", title: "Season of Discovery: Outland", goal: "Step through the Dark Portal into shattered realms.", start: 1796860800 * 1000 },
+            { id: "wotlk", title: "Season of Discovery: Northrend", goal: "Venture north into frozen wilderness.", start: 1802908800 * 1000 }
+        ];
+
+        // FULL MASTER WORLD EVENT LIST (Months: 0 = Jan, 11 = Dec)
+        const MASTER_WORLD_EVENTS = [
+            { id: "lunar", name: "Lunar Festival", icon: "fa-moon", startMonth: 0, startDate: 20, endMonth: 1, endDate: 10, desc: "Honor Elders, collect Coins of Ancestry, and defeat Omen!" },
+            { id: "love", name: "Love is in the Air", icon: "fa-heart", startMonth: 1, startDate: 8, endMonth: 1, endDate: 22, desc: "Perfumes, charms, and Apothecary Hummel in Shadowfang Keep await!" },
+            { id: "noblegarden", name: "Noblegarden", icon: "fa-egg", startMonth: 3, startDate: 1, endMonth: 3, endDate: 8, desc: "Hunt for hidden Brightly Colored Eggs around starting towns!" },
+            { id: "childrens", name: "Children's Week", icon: "fa-child", startMonth: 4, startDate: 1, endMonth: 4, endDate: 8, desc: "Adopt an orphan and show them the wonders of Azeroth!" },
+            { id: "midsummer", name: "Midsummer Fire Festival", icon: "fa-fire", startMonth: 5, startDate: 21, endMonth: 6, endDate: 5, desc: "Honor bonfires across Azeroth and challenge Lord Ahune!" },
+            { id: "pirates", name: "Pirates' Day", icon: "fa-skull-crossbones", startMonth: 8, startDate: 19, endMonth: 8, endDate: 20, desc: "Join Dread Captain Demeza in Booty Bay for a drink and pirate costume!" },
+            { id: "brewfest", name: "Brewfest", icon: "fa-beer-mug-empty", startMonth: 8, startDate: 20, endMonth: 9, endDate: 6, desc: "Celebrate brews, rams, and daily barker runs in main cities!" },
+            { id: "harvest", name: "Harvest Festival", icon: "fa-wheat-awn", startMonth: 8, startDate: 28, endMonth: 9, endDate: 5, desc: "Honor fallen heroes like Uther Lightbringer and Grommash Hellscream." },
+            { id: "hallow", name: "Hallow's End", icon: "fa-jack-o-lantern", startMonth: 9, startDate: 18, endMonth: 10, endDate: 1, desc: "Trick-or-treat, bob for apples, and face the Headless Horseman!" },
+            { id: "dead", name: "Day of the Dead", icon: "fa-masks-theater", startMonth: 10, startDate: 1, endMonth: 10, endDate: 3, desc: "Dance with Catrina in cemeteries to honor departed spirits." },
+            { id: "pilgrim", name: "Pilgrim's Bounty", icon: "fa-drumstick-bite", startMonth: 10, startDate: 20, endMonth: 10, endDate: 27, desc: "Share feast tables, level cooking, and hunt wild turkeys!" },
+            { id: "winterveil", name: "Feast of Winter Veil", icon: "fa-gifts", startMonth: 11, startDate: 15, endMonth: 0, endDate: 2, desc: "Greatfather Winter brings treats, snowy adventures, and holiday gifts!" }
         ];
 
         const ROTATION_DURATION_MS = 14 * 24 * 60 * 60 * 1000;
@@ -265,84 +316,166 @@
         const ROTATIONS = [
             { 
                 name: "Leveling & Questing", 
-                desc: "Complete zone lore arcs, push alts, or clean up quest logs.", 
+                desc: "Accelerate your journey across Azeroth. Earn bonus XP and gold while completing zone story arcs, leveling alts, or clearing your quest log.", 
                 bonuses: ["+50% Quest XP", "+50% Quest Gold"] 
             },
             { 
                 name: "Reputations & Dungeons", 
-                desc: "Clear expansion dungeons & push faction reputations.", 
+                desc: "Revisit classic dungeons and align with key factions. Collect extra dungeon badges and boosted reputation gains with every run.", 
                 bonuses: ["+50% Rep Gain", "Bonus Dungeon Badges"] 
             },
             { 
                 name: "PvP & Honor", 
-                desc: "Participate in Battlegrounds & Arena matches.", 
+                desc: "Step back into battlegrounds and arenas. Earn boosted Honor and Arena points to rapidly upgrade your gear and dominate your rivals.", 
                 bonuses: ["+100% Honor Points", "Bonus BG Marks"] 
             },
             { 
-                name: "Professions & World", 
-                desc: "Level primary skills & gather open-world materials.", 
+                name: "Professions & Gathering", 
+                desc: "Master your trades and harvest the realm's resources. Enjoy doubled skill-up rates and bonus material yields from world nodes.", 
                 bonuses: ["+100% Skillup Chance", "+100% Resource Gathering"] 
             },
             { 
                 name: "Raid Progression", 
-                desc: "Clear active raid tier bosses (10/25).", 
+                desc: "Conquer end-game raid encounters with an edge. Receive weekly consumable care packages, accelerated raid rep, and a combat buff.", 
                 bonuses: ["+20% Raid Rep", "Weekly Raid Care Package"] 
             }
         ];
 
-        // 5x5 Matrix mapping each Category to its 5 specific Goals
         const CATEGORY_GOALS = [
-            // Category 0: Leveling & Questing
             [
-                "Complete end-game and daily quests",
-                "Level an alt through a full zone",
-                "Clean out and organize the quest log",
-                "Progress toward the zone Loremaster achievement",
-                "Quest in an unfamiliar or rarely visited zone"
+                "Finish old quests from your quest log",
+                "Level through an entire zone",
+                "Complete daily and end-game quests",
+                "Fully reveal a major region's map",
+                "Complete all quests for a specific dungeon"
             ],
-            // Category 1: Reputations & Dungeons
             [
-                "Reach the next reputation standing with a faction",
-                "Run every dungeon in your current level bracket",
-                "Complete all associated quests inside a dungeon",
-                "Purchase a faction tabard, recipe, or cosmetic",
-                "Master a high-level or heroic dungeon run"
+                "Advance your reputation with a key faction",
+                "Fully clear 3 dungeons",
+                "Collect 20 Emblems from dungeons",
+                "Purchase a faction tabard or rep gear",
+                "Complete a daily heroic dungeon quest"
             ],
-            // Category 2: PvP & Honor
             [
-                "Win a match in each available battleground",
-                "Engage in open-world PvP or zone objectives",
-                "Upgrade or purchase a piece of honor gear",
-                "Earn a battleground achievement or kill milestone",
-                "Test a new PvP talent build or dual-spec setup"
+                "Win 3 Battleground matches",
+                "Purchase a new piece of Honor or Arena gear",
+                "Form a world PvP raid and cause chaos",
+                "Compete in 3 Arena matches",
+                "Defeat rivals in 5 duels"
             ],
-            // Category 3: Professions & World
             [
-                "Gain 25 skill points in a primary profession",
-                "Stockpile a reserve of high-tier crafting materials",
-                "Track down and learn rare or vendor-restricted recipes",
-                "Max out a secondary skill (Cooking, Fishing, First Aid)",
-                "Hunt a rare world mob, pet, or cosmetic drop"
+                "Level a primary profession",
+                "Gather a full stack of raw materials",
+                "Advance a secondary profession skill",
+                "Craft a high-end item or rare recipe",
+                "Earn gold by listing items on the Auction House"
             ],
-            // Category 4: Raid Progression
             [
-                "Stockpile a full suite of raid flasks, food, and potions",
-                "Defeat the final boss of the active expansion raid tier",
-                "Secure an upgraded gear piece or tier token",
-                "Complete an attunement or key quest line",
-                "Execute a clean, deathless clear on a key raid encounter"
+                "Fully clear a raid",
+                "Defeat a boss in record time",
+                "Advance your standing with a raid faction",
+                "Upgrade your team's total GearScore",
+                "Complete a key raid attunement"
             ]
         ];
 
         let activeSeasonKey = "";
-        let currentRotationIdx = 0; // The actual active rotation based on time
-        let selectedCategoryIdx = 0; // The category currently clicked/selected by the user
+        let currentRotationIdx = 0;
+        let selectedCategoryIdx = 0;
+
+        function getNextThreeEvents() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+            const processedEvents = MASTER_WORLD_EVENTS.map(ev => {
+                let startYear = currentYear;
+                let endYear = currentYear;
+
+                if (ev.startMonth > ev.endMonth) {
+                    if (now.getMonth() <= ev.endMonth) {
+                        startYear = currentYear - 1;
+                    } else {
+                        endYear = currentYear + 1;
+                    }
+                }
+
+                let start = new Date(startYear, ev.startMonth, ev.startDate, 0, 0, 0);
+                let end = new Date(endYear, ev.endMonth, ev.endDate, 23, 59, 59);
+
+                if (now > end) {
+                    startYear++;
+                    endYear++;
+                    start = new Date(startYear, ev.startMonth, ev.startDate, 0, 0, 0);
+                    end = new Date(endYear, ev.endMonth, ev.endDate, 23, 59, 59);
+                }
+
+                const isActive = now >= start && now <= end;
+                let timeText = "";
+
+                if (isActive) {
+                    timeText = "Active Now";
+                } else {
+                    const diffDays = (start - now) / (1000 * 60 * 60 * 24);
+                    const weeksUntil = Math.ceil(diffDays / 7);
+                    timeText = weeksUntil <= 1 ? "THIS WEEK" : `In ${weeksUntil} weeks`;
+                }
+
+                const dateRangeStr = `${monthNames[ev.startMonth]} ${ev.startDate} – ${monthNames[ev.endMonth]} ${ev.endDate}`;
+
+                return {
+                    ...ev,
+                    startDateObj: start,
+                    endDateObj: end,
+                    isActive,
+                    timeText,
+                    dateRangeStr
+                };
+            });
+
+            processedEvents.sort((a, b) => {
+                if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+                return a.startDateObj - b.startDateObj;
+            });
+
+            return processedEvents.slice(0, 3);
+        }
+
+        function renderEventsBanner() {
+            const container = document.getElementById('events-container');
+            const events = getNextThreeEvents();
+
+            container.innerHTML = events.map(ev => {
+                const statusClass = ev.isActive ? "active" : "upcoming";
+                const badgeClass = ev.isActive ? "badge-active" : "badge-upcoming";
+                const statusLabel = ev.isActive ? "ACTIVE" : "UPCOMING";
+
+                return `
+                    <div class="event-card ${statusClass}">
+                        <div class="event-card-header">
+                            <div>
+                                <h3 class="event-card-title">${ev.name}</h3>
+                            </div>
+                            <i class="fa-solid ${ev.icon}"></i>
+                        </div>
+                        <p class="event-card-desc">${ev.desc}</p>
+                        <div class="event-meta">
+                            <div class="event-date"><i class="fa-regular fa-calendar" style="margin-right: 6px; color: var(--text-muted);"></i>${ev.dateRangeStr}</div>
+                            <div class="event-badges">
+                                <span class="badge badge-time">${ev.timeText}</span>
+                                <span class="badge ${badgeClass}">${statusLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         function renderDashboard() {
             const now = Date.now();
             let activeSeasonIdx = 0;
 
-            // Determine active season
             for (let i = SEASONS.length - 1; i >= 0; i--) {
                 if (now >= SEASONS[i].start) {
                     activeSeasonIdx = i;
@@ -357,26 +490,19 @@
             document.getElementById('season-title').innerText = currentSeason.title;
             document.getElementById('season-goal').innerText = currentSeason.goal;
 
-            // Calculate Season End Countdown
             const seasonEndTime = currentSeason.start + SEASON_DURATION_MS;
             const msRemaining = Math.max(0, seasonEndTime - now);
             const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
             
-            document.querySelector('.timer-badge span').innerText = 'Season Ends In';
             document.getElementById('time-remaining').innerText = `${daysRemaining} Days`;
 
-            // Calculate Active Cycle within current season
             const elapsed = Math.max(0, now - currentSeason.start);
             const cycleNumber = Math.floor(elapsed / ROTATION_DURATION_MS);
             currentRotationIdx = cycleNumber % ROTATIONS.length;
-            
-            // Default selected view to the currently active rotation on load
             selectedCategoryIdx = currentRotationIdx;
 
-            // Render Rotation Cards on the Left
+            renderEventsBanner();
             renderRotationsList();
-
-            // Render the Dynamic Checklist on the Right
             renderChecklist(selectedCategoryIdx);
         }
 
@@ -394,15 +520,11 @@
                     statusClass = 'ended';
                     badgeHTML = '<span class="badge badge-ended">Ended</span>';
                 } else {
-                    const cyclesAhead = index - currentRotationIdx;
-                    const weeksAhead = cyclesAhead * 2;
-                    const weekText = weeksAhead === 1 ? '1 Week' : `${weeksAhead} Weeks`;
-                    badgeHTML = `<span class="badge badge-upcoming">Starting in ${weekText}</span>`;
+                    const weeksAhead = (index - currentRotationIdx) * 2;
+                    badgeHTML = `<span class="badge badge-upcoming">Starting in ${weeksAhead} Weeks</span>`;
                 }
 
-                if (index === selectedCategoryIdx) {
-                    statusClass += ' selected';
-                }
+                if (index === selectedCategoryIdx) statusClass += ' selected';
 
                 const bonusListHTML = item.bonuses
                     .map(b => `<li class="rotation-bonus-item"><i class="fa-solid fa-bolt"></i> ${b}</li>`)
@@ -417,9 +539,7 @@
                         ${badgeHTML}
                     </div>
                     <div class="rotation-desc">${item.desc}</div>
-                    <ul class="rotation-bonus-list">
-                        ${bonusListHTML}
-                    </ul>
+                    <ul class="rotation-bonus-list">${bonusListHTML}</ul>
                 `;
                 container.appendChild(li);
             });
@@ -456,11 +576,8 @@
             document.querySelectorAll('#checklist-container input').forEach(cb => {
                 states[cb.id] = cb.checked;
             });
-            
-            // Merge with existing saved state to keep historical progress intact across all categories
             const existing = JSON.parse(localStorage.getItem('season_checklist_state') || '{}');
-            const updated = { ...existing, ...states };
-            localStorage.setItem('season_checklist_state', JSON.stringify(updated));
+            localStorage.setItem('season_checklist_state', JSON.stringify({ ...existing, ...states }));
         }
 
         function loadChecklist() {
